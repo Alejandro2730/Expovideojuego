@@ -268,7 +268,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 163428421}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -13.29, y: 7.77, z: 90}
+  m_LocalPosition: {x: -12.65, y: 6.33, z: 90}
   m_LocalScale: {x: 3.0634918, y: 1.908611, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2591,7 +2591,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -111.6, y: 64.202}
+  m_AnchoredPosition: {x: -106.2, y: 45.3}
   m_SizeDelta: {x: 79.355, y: 67.742}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &439839829
@@ -4874,7 +4874,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1051996557}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.67, y: 4.51, z: 0}
+  m_LocalPosition: {x: 0.17, y: 4.51, z: 0}
   m_LocalScale: {x: 4.5, y: 4.5, z: 4.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -5370,7 +5370,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   txtTutorial: {fileID: 439839829}
+  txtFinal: {fileID: 0}
   tiempoEnPantalla: 3
+  tiempoEnEscena: 0
   tiempoDesvanecimiento: 1
   vidas: 0
 --- !u!4 &1719713359
@@ -5872,6 +5874,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7274502878533532111, guid: 2d0db2e612422644b9d130e0120d78b0, type: 3}
+      propertyPath: ataque
+      value: 
+      objectReference: {fileID: 4696450474278501748, guid: e8ed20c08b149c943b3236abb5c3289a, type: 3}
+    - target: {fileID: 7274502878533532111, guid: 2d0db2e612422644b9d130e0120d78b0, type: 3}
+      propertyPath: tiempoPetrificado
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d0db2e612422644b9d130e0120d78b0, type: 3}
 --- !u!1001 &7323823933285464935
@@ -5881,6 +5891,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7323823931890537250, guid: fc5d4c5355363af42b378539f783918a, type: 3}
+      propertyPath: ataque
+      value: 
+      objectReference: {fileID: 4696450474278501748, guid: e8ed20c08b149c943b3236abb5c3289a, type: 3}
+    - target: {fileID: 7323823931890537250, guid: fc5d4c5355363af42b378539f783918a, type: 3}
+      propertyPath: tiempoPetrificado
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7323823931890537251, guid: fc5d4c5355363af42b378539f783918a, type: 3}
       propertyPath: m_RootOrder
       value: 1

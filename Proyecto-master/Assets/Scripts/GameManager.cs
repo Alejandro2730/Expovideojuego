@@ -2,27 +2,38 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    //TEXTOS
+    // TEXTOS
     public Text txtTutorial;
-    
+    public TextMeshProUGUI txtFinal;
+
     // TXT ATRIBUTOS
     public float tiempoEnPantalla = 3f;
     public float tiempoEnEscena = 0f;
     public float tiempoDesvanecimiento = 1f;
 
-    string tiempoEscenaAnteriorKey;
+    string[] nombresEscenas = { "SceneNivel1", "SceneNivel2", "SceneNivel3" };
 
-    string [] textos = new string[]{
-        "Aquí tenemos el inicio del tutorial",
-        "Nuevo Texto1",
-        "Nuevo Texto2"
+    int indiceEscenaActual = 0;
+
+    string[] textos = new string[]{
+        "Movimiento del personaje Rocío: ",
+        "Flechas direccionales",
+        "Vidas: 1",
+        "Ataque: N° 1, N°2",
+        "Puntos de mana para disparos: 50",
+        "Movimiento del personaje Nicole: ",
+        "A y D para la dirección. W para saltar",
+        "Ataque: \nGolpe: E\nDisparos: R",
+        "Vidas: 1",
+        "Puntos de mana para disparos: 50"
     };
 
-    //VARIABLES DINÁMICAS
+    // VARIABLES DINÁMICAS
     Player1Controller player1;
     Player2Controller player2;
     int cont;
@@ -33,9 +44,8 @@ public class GameManager : MonoBehaviour
     int gemas;
     int mividita;
     public int vidas;
-
     private string tiempoTranscurridoPath = "Assets/TiempoTranscurrido.txt"; // Ruta del archivo de texto
-    
+
     void Start()
     {
         player1 = FindObjectOfType<Player1Controller>();
@@ -48,9 +58,9 @@ public class GameManager : MonoBehaviour
         vidas = 1;
         gemas = 0;
         mividita = 10;
-
-        StartCoroutine(MostrarTextoRoutine(textos));
+        IgnorarJugadores();
         CargarTiempoTranscurrido(); // Cargar el tiempo al iniciar la escena
+        StartCoroutine(MostrarTextoRoutine(textos));
     }
 
     void OnDestroy()
@@ -61,13 +71,16 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         tiempoEnEscena += Time.deltaTime;
-        Debug.Log("Tiempo transcurrido: " + tiempoEnEscena);
+        //Debug.Log("Tiempo transcurrido: " + tiempoEnEscena);
+
+        // Actualizar el campo de texto txtFinal en cada frame
+        ActualizarTxtFinal();
     }
 
     void GuardarTiempoTranscurrido()
     {
         // Crea o abre el archivo de texto
-        StreamWriter writer = new StreamWriter(tiempoTranscurridoPath);
+        StreamWriter writer = new StreamWriter(tiempoTranscurridoPath, true);
 
         // Escribe el tiempo transcurrido en el archivo
         writer.WriteLine(tiempoEnEscena.ToString());
@@ -75,25 +88,47 @@ public class GameManager : MonoBehaviour
         // Cierra el archivo
         writer.Close();
     }
+    
+    public void IgnorarJugadores(){
+      Physics2D.IgnoreCollision(player2.GetComponent<BoxCollider2D>() ,player1.GetComponent<BoxCollider2D>(), true);
+    }
 
+     public void NoignorarJugadores(){
+      Physics2D.IgnoreCollision(player2.GetComponent<BoxCollider2D>() ,player1.GetComponent<BoxCollider2D>(), false);
+    }
     public void CargarTiempoTranscurrido()
     {
         // Verifica si el archivo existe
         if (File.Exists(tiempoTranscurridoPath))
         {
             // Lee el contenido del archivo
-            string tiempoTranscurridoString = File.ReadAllText(tiempoTranscurridoPath);
+            string[] tiemposTranscurridosString = File.ReadAllLines(tiempoTranscurridoPath);
 
-            // Convierte el tiempo transcurrido de cadena a flotante
-            if (float.TryParse(tiempoTranscurridoString, out float tiempoGuardado))
+            // Verificar si hay suficientes tiempos guardados en el archivo
+            if (tiemposTranscurridosString.Length >= nombresEscenas.Length)
             {
-                // Asigna el tiempo guardado al tiempo en escena
-                tiempoEnEscena = tiempoGuardado;
-                Debug.Log("Tiempo cargado: " + tiempoEnEscena);
+                float tiempoTotal = 0f;
+
+                // Sumar los tiempos guardados de las escenas anteriores
+                for (int i = 0; i < indiceEscenaActual; i++)
+                {
+                    if (float.TryParse(tiemposTranscurridosString[i], out float tiempoEscena))
+                    {
+                        tiempoTotal += tiempoEscena;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("No se pudo convertir el tiempo transcurrido guardado en un valor flotante.");
+                    }
+                }
+
+                // Asignar el tiempo total al tiempo en escena
+                tiempoEnEscena = tiempoTotal;
+                Debug.Log("Tiempo total cargado: " + tiempoEnEscena);
             }
             else
             {
-                Debug.LogWarning("No se pudo convertir el tiempo transcurrido guardado en un valor flotante.");
+                Debug.LogWarning("No hay suficientes tiempos transcurridos guardados en el archivo.");
             }
         }
         else
@@ -173,19 +208,65 @@ public class GameManager : MonoBehaviour
 
     IEnumerator MostrarTextoRoutine(string[] txt)
     {
-        foreach(string texto in txt)
+        foreach (string texto in txt)
         {
+            if(txtTutorial != null){
             txtTutorial.text = texto;
             txtTutorial.CrossFadeAlpha(1f, tiempoDesvanecimiento, false);
-
+            }
             yield return new WaitForSeconds(tiempoEnPantalla);
-
+            if(txtTutorial != null)
             txtTutorial.CrossFadeAlpha(0f, tiempoDesvanecimiento / 2f, false);
 
             yield return new WaitForSeconds(tiempoDesvanecimiento / 2f);
         }
 
         // Guardar el tiempo transcurrido al final de la secuencia de texto
+        CambiarEscena();
+    }
+
+    void CambiarEscena()
+    {
+        // Guardar el tiempo transcurrido de la escena actual
         GuardarTiempoTranscurrido();
+
+        // Cargar la siguiente escena
+        indiceEscenaActual++;
+        if (indiceEscenaActual < nombresEscenas.Length)
+        {
+            SceneManager.LoadScene(nombresEscenas[indiceEscenaActual]);
+        }
+        else
+        {
+            Debug.Log("Se han recorrido todas las escenas.");
+        }
+    }
+
+    void ActualizarTxtFinal()
+    {
+        // Verificar si el archivo existe
+        if (File.Exists(tiempoTranscurridoPath))
+        {
+            // Leer el contenido del archivo
+            string[] tiemposTranscurridosString = File.ReadAllLines(tiempoTranscurridoPath);
+
+            if (tiemposTranscurridosString.Length > 0)
+            {
+                // Obtener la última línea
+                string ultimaLinea = tiemposTranscurridosString[tiemposTranscurridosString.Length - 1];
+
+                // Actualizar el campo de texto txtFinal
+                if(txtFinal != null)
+                 txtFinal.text = "Tiempo Final: " + ultimaLinea;
+            }
+            else
+            {
+                Debug.LogWarning("El archivo de tiempo transcurrido está vacío.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No se encontró el archivo de tiempo transcurrido.");
+        }
     }
 }

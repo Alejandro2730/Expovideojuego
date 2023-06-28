@@ -20,4 +20,12 @@ public class NivelesController : MonoBehaviour
     {
         SceneManager.LoadScene(4);
     }
+    public void Regresar()
+    {
+        SceneManager.LoadScene(1);
+    }
+    public void Salir()
+    {
+        SceneManager.LoadScene(6);
+    }
 }
